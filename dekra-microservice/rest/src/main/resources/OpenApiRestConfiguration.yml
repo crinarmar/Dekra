@@ -1,0 +1,176 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Dekra Swagger Product
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /productos:
+    get:
+      summary: List all product
+      operationId: listProducts
+      responses:
+        '200':
+          description: All Products
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ProductCollectionRest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: create a product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRest"
+      responses:
+        '201':
+          description: Created
+  /productos/{id}:
+    get:
+      summary: Find a specific product
+      operationId: findProductById
+      parameters:
+        - name: id
+          in: path
+          description: unique product identification
+          required: true
+          schema:
+           type: integer
+           format: int64
+      responses:
+        '200':
+          description: Product selected
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ProductRest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: update a exist product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: unique product identification
+          required: true
+          schema:
+           type: integer
+           format: int64
+      requestBody:
+        required: true
+        content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRest"
+      responses:
+        '201':
+          description: Modified
+    delete:
+      summary: Delete a specific product
+      operationId: deleteProductById
+      parameters:
+        - name: id
+          in: path
+          description: unique product identification
+          required: true
+          schema:
+           type: integer
+           format: int64
+      responses:
+        '202':
+          description: Accepted
+  /productos/find:
+    get:
+      summary: List products by filter
+      operationId: listProductsByFilter
+      parameters:
+        - name: name
+          in: query
+          description: name product
+          required: false
+          schema:
+           type: string
+        - name: description
+          in: query
+          description: description product
+          required: false
+          schema:
+           type: string
+        - name: price
+          in: query
+          description: price product
+          required: false
+          schema:
+           type: number
+           format: double
+      responses:
+        '200':
+          description: Products
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ProductCollectionRest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    ProductRest:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - price
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string     
+        price:
+          type: number
+          format: double
+        tax:
+          type: number
+          format: double
+        totalPrice:
+          type: number
+          format: double
+    ProductCollectionRest:
+      type: array
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/ProductRest"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
